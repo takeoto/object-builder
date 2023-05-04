@@ -3,6 +3,8 @@
 #### Usage
 ```php
 
+# --- Creating the `SomeClass` builder
+
 /**
  * @implements ObjectBuilderInterface<SomeClass>
  */
@@ -29,19 +31,30 @@ class SomeClassBuilder implements ObjectBuilderInterface
     }
 }
 
-$buildersProvider0 = new BuilderProvider();
-$buildersProvider0->register(new SomeClassBuilder(), '{{ SomeClass::class }}');
+# --- Basic usage with the builders provider
 
-$builder = $buildersProvider0->for('{{ SomeClass::class }}');
-
-if ($builder->verify('{{ some data }}')->isOk()) {
-    $object = $builder->build('{{ some data }}');
+$buildersProvider = new BuilderProvider();
+# Register builder in the builder provider
+$buildersProvider->register(new SomeClassBuilder(), SomeClass::class);
+# Getting the builder from the builder provider
+$builder = $buildersProvider->for(SomeClass::class);
+# Verifying data for building 
+if ($builder->verify('some data')->isOk()) {
+    # throw an exception or something
 }
+# Building object
+$object = $builder->build('some data');
 
-$buildersProvider1 = new BuilderProvider();
-$buildersProvider1->attach($buildersProvider0);
-$object = $buildersProvider1->for('{{ SomeClass::class }}')->build('{{ some data }}');
+# --- The extendable builders provider
 
+$buildersProvider = new BuilderProvider();
+$buildersProvider->attach($buildersProvider0);
+$buildersProvider->attach($buildersProvider1);
+$buildersProvider->attach($buildersProvider3);
+
+$object = $buildersProvider->for(SomeClass::class)->build('some data');
+
+# --- The builders register
 
 class BuildersGroup implements BuilderRegisterInterface
 {
