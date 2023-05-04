@@ -7,14 +7,13 @@ namespace Takeoto\ObjectBuilder;
 use Takeoto\ObjectBuilder\Contract\BuilderProviderInterface;
 use Takeoto\ObjectBuilder\Contract\ObjectBuilderInterface;
 use Takeoto\ObjectBuilder\Contract\SelfBuilderInterface;
-use Takeoto\ObjectBuilder\Rule\Contract\RuleStateInterface;
-use Takeoto\ObjectBuilder\Utility\Ensure;
-use Takeoto\ObjectBuilder\Validator\ValidatorInterface;
+use Takeoto\Rule\Contract\VerifierInterface;
+use Takeoto\State\Contract\StateInterface;
 
 class SelfBuildersProvider implements BuilderProviderInterface
 {
     public function __construct(
-        private readonly ValidatorInterface $validator,
+        private VerifierInterface $verifier,
     ) {
     }
 
@@ -23,14 +22,16 @@ class SelfBuildersProvider implements BuilderProviderInterface
      */
     public function for(string $class): ObjectBuilderInterface
     {
-        Ensure::true($this->has($class), sprintf('Cannot build the "%s" instance.', $class));
+        if (!$this->has($class)) {
+            throw new \RuntimeException(sprintf('Cannot build the "%s" instance.', $class));
+        }
 
         if (!is_subclass_of($class, SelfBuilderInterface::class)) {
             throw new \Exception('Fuck the PhpStan and autocomplete in PhpStorm!');
         }
 
         return new CustomBuilder(
-            fn(mixed $data): RuleStateInterface => $this->validator->validate($data, $class::getBuildClaims()),
+            fn(mixed $data): StateInterface => $this->verifier->verify($data, $class::getBuildClaims()),
             fn(mixed $data): object => $class::build($data),
         );
     }

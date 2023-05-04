@@ -1,7 +1,9 @@
 # object-builder
 ### Abstraction for object builders
 #### Usage
+
 ```php
+use Takeoto\ObjectBuilder\Contract\SelfBuilderInterface;
 
 # --- Creating the `SomeClass` builder
 
@@ -34,10 +36,13 @@ class SomeClassBuilder implements ObjectBuilderInterface
 # --- Basic usage with the builders provider
 
 $buildersProvider = new BuilderProvider();
+
 # Register builder in the builder provider
 $buildersProvider->register(new SomeClassBuilder(), SomeClass::class);
+
 # Getting the builder from the builder provider
 $builder = $buildersProvider->for(SomeClass::class);
+
 # Verifying data for building 
 if ($builder->verify('some data')->isOk()) {
     # throw an exception or something
@@ -66,6 +71,25 @@ class BuildersGroup implements BuilderRegisterInterface
     }
 }
 
-$buildersProvider2 = new BuilderProvider();
-$buildersProvider2->register(new BuilderGroup());
+$buildersProvider = new BuilderProvider();
+$buildersProvider->register(new BuilderGroup());
+
+# --- Self builder object
+
+class SomeClass implements SelfBuilderInterface
+{
+    /**
+     * @template T of object
+     * @param mixed|null $data
+     * @return T
+     */
+    public static function build(mixed $data = null): static
+    {
+    
+    }
+    
+    public static function getBuildClaims(): ClaimInterface;
+}
+
+
 ```
