@@ -7,7 +7,8 @@
     "authors": [
         {
             "name": "Vladysalv Vernyhora",
-            "homepage": "vladyslav.vernyhora@gmail.com"
+            "email": "vladyslav.vernyhora@gmail.com",
+            "homepage": "https://github.com/takeoto"
         }
     ],
     "require": {

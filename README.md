@@ -15,6 +15,7 @@ use Takeoto\Rule\Verifier;
 use Takeoto\State\Contract\StateInterface;
 use Takeoto\State\State;
 use Takeoto\ObjectBuilder\Contract\SelfBuilderInterface;
+use Takeoto\Rule\Builder\RuleBuilder;
 
 # --- Creating the `SomeClass` builder
 
@@ -112,9 +113,7 @@ class SomeClass implements SelfBuilderInterface
     }
 }
 
-/** @var RuleBuilderInterface $ruleBuilder */
-$ruleBuilder = ' rule builder ';
-$buildersProvider = new SelfBuildersProvider(new Verifier($ruleBuilder));
+$buildersProvider = new SelfBuildersProvider(new Verifier(new RuleBuilder()));
 
 if ($buildersProvider->has(SomeClass::class)) {
     $object = $buildersProvider->for(SomeClass::class)->build('some value');
